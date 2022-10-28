@@ -32,7 +32,7 @@ let joinRoomInit = async () => {
     rtmClient = await AgoraRTM.createInstance(APP_ID)
     await rtmClient.login({uid, token})
 
-    // ★await rtmClient.addOrUpdateLocalUserAttributes({'name':displayName}) // 참가자 리스트 이름으로 나오게 하는 것!
+    await rtmClient.addOrUpdateLocalUserAttributes({'name':displayName}) // 참가자 리스트 이름으로 나오게 하는 것!
 
     channel = await rtmClient.createChannel(roomId)
     await channel.join()
@@ -62,7 +62,7 @@ let joinStream = async () => {
                 </div>` // 참여자의 화면 (아래에 뜨는 video container 불러옴)
 
     document.getElementById('streams__container').insertAdjacentHTML('beforeend', player)
-    document.getElementById(`user-container-${uid}`).addEventListener('click', expandVideoFrame)
+    document.getElementById(`user-container-${uid}`).addEventListener('click', expandVideoFrame) //★
 
     localTracks[1].play(`user-${uid}`)
     await client.publish([localTracks[0], localTracks[1]])
@@ -98,7 +98,7 @@ let handleUserPublished = async (user, mediaType) => {
             </div>`
 
         document.getElementById('streams__container').insertAdjacentHTML('beforeend', player) // 이 뒤 내용 꼭 넣어줘야 함
-        document.getElementById(`user-container-${user.uid}`).addEventListener('click', expandVideoFrame)
+        document.getElementById(`user-container-${user.uid}`).addEventListener('click', expandVideoFrame) //★
         }
 
     if (displayFrame.style.display) {
@@ -175,7 +175,7 @@ let toggleScreen = async (e) => {
             localScreenTracks.on('track-ended', () => {
                 // console.log('track-ended');
                 // console.log('you can run your code here to stop screen')
-                sharingScreen = false
+                //+ 여기를 주석처리해줌 sharingScreen = false
                 document.getElementById(`user-container-${uid}`).remove()
                 switchToCamera()
             })
