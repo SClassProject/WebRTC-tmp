@@ -73,11 +73,14 @@ let switchToCamera = async() => {
                 <div class="video-player" id="user-${uid}"></div>
                 </div>`
     displayFrame.insertAdjacentHTML('beforeend', player)
-    await localTracks[0].setMuted(true)
-    await localTracks[1].setMuted(true)
+    //await localTracks[0].setMuted(true)
+    //await localTracks[1].setMuted(true)
 
-    document.getElementById('mic-btn').classList.remove('active')
+    // document.getElementById('mic-btn').classList.remove('active')
     document.getElementById('screen-btn').classList.remove('active')
+
+    document.getElementById(`user-container-${uid}`).addEventListener('click', expandVideoFrame)
+    // 위 코드 추가해줬더니 화면 공유 멈춘 후에도 클릭 가능해짐 (expandVideoFrame)
 
     localTracks[1].play(`user-${uid}`)
     await client.publish([localTracks[1]])
@@ -152,7 +155,8 @@ let toggleScreen = async (e) => {
         localScreenTracks = await AgoraRTC.createScreenVideoTrack()
 
         document.getElementById(`user-container-${uid}`).remove()
-        displayFrame.style.display = 'block'
+        // displayFrame.style.display = 'block'
+        // 위의 두 줄 코드
 
         let player = `<div class="video__container" id="user-container-${uid}">
         <div class="video-player" id="user-${uid}"></div>
@@ -167,9 +171,20 @@ let toggleScreen = async (e) => {
         await client.unpublish([localTracks[1]])
         await client.publish([localScreenTracks]) // 이거 하면 다른 사람 화면에서도 동그라미에 화면 공유한 거 보임
 
+        if (localScreenTracks) {
+            localScreenTracks.on('track-ended', () => {
+                // console.log('track-ended');
+                // console.log('you can run your code here to stop screen')
+                sharingScreen = false
+                document.getElementById(`user-container-${uid}`).remove()
+                switchToCamera()
+            })
+          } // 화면 공유 중지 시 화면 active 사라지고 switchToCamera() 하게 만듦
+       
 
-
-    } else { 
+    }
+    
+    else { 
         sharingScreen = false
         document.getElementById(`user-container-${uid}`).remove()
         await client.unpublish([localScreenTracks])
